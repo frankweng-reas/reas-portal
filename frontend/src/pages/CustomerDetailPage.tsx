@@ -155,9 +155,10 @@ export default function CustomerDetailPage({ customer, onBack, onUpdate }: Props
             <button
               onClick={() => { setEditingName(true); setNameInput(customer.name) }}
               title="修改名稱"
-              className="text-gray-400 hover:text-gray-700"
+              className="flex items-center gap-1 rounded-md border border-gray-300 px-2 py-1 text-xs text-gray-500 hover:bg-gray-100"
             >
-              <Pencil className="h-4 w-4" />
+              <Pencil className="h-3.5 w-3.5" />
+              修改
             </button>
           </>
         )}
