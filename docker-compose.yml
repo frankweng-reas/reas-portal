@@ -1,0 +1,35 @@
+services:
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: reasportal
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-secret}
+      POSTGRES_DB: reasportal
+    volumes:
+      - portal_data:/var/lib/postgresql/data
+
+  backend:
+    build: ./backend
+    restart: unless-stopped
+    environment:
+      DATABASE_URL: postgresql://reasportal:${DB_PASSWORD:-secret}@db:5432/reasportal
+      PORTAL_API_KEY: ${PORTAL_API_KEY}
+      ACTIVATION_SECRET: ${ACTIVATION_SECRET}
+      CORS_ORIGINS: '["http://localhost:5174"]'
+    depends_on:
+      - db
+
+  frontend:
+    build:
+      context: ./frontend
+      args:
+        VITE_PORTAL_API_KEY: ${PORTAL_API_KEY}
+    restart: unless-stopped
+    ports:
+      - "5174:80"
+    depends_on:
+      - backend
+
+volumes:
+  portal_data:
