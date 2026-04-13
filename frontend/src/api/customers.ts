@@ -24,6 +24,13 @@ export function createCustomer(name: string): Promise<Customer> {
   })
 }
 
+export function updateCustomer(id: number, name: string): Promise<Customer> {
+  return apiFetch<Customer>(`/customers/${id}`, {
+    method: 'PATCH',
+    body: JSON.stringify({ name }),
+  })
+}
+
 export function getCustomer(id: number): Promise<Customer> {
   return apiFetch<Customer>(`/customers/${id}`)
 }

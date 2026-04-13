@@ -69,7 +69,24 @@ def create_customer(
     return _to_response(c)
 
 
-@router.get("/{customer_id}", response_model=CustomerResponse)
+@router.patch("/{customer_id}", response_model=CustomerResponse)
+def update_customer(
+    customer_id: int,
+    req: CustomerCreate,
+    db: Annotated[Session, Depends(get_db)],
+    _: Annotated[str, Depends(require_api_key)],
+) -> CustomerResponse:
+    c = db.query(Customer).filter(Customer.id == customer_id).first()
+    if not c:
+        raise HTTPException(status_code=404, detail="客戶不存在")
+    if db.query(Customer).filter(Customer.name == req.name, Customer.id != customer_id).first():
+        raise HTTPException(status_code=409, detail="客戶名稱已存在")
+    c.name = req.name
+    db.commit()
+    db.refresh(c)
+    return _to_response(c)
+
+
 def get_customer(
     customer_id: int,
     db: Annotated[Session, Depends(get_db)],

@@ -17,6 +17,7 @@ export default function App() {
           <CustomerDetailPage
             customer={selectedCustomer}
             onBack={() => setSelectedCustomer(null)}
+            onUpdate={setSelectedCustomer}
           />
         ) : (
           <CustomersPage onSelect={setSelectedCustomer} />

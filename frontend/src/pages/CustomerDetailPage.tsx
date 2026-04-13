@@ -1,19 +1,20 @@
 import { useState, useEffect, useCallback } from 'react'
-import { ArrowLeft, Copy, Check, ClipboardList } from 'lucide-react'
+import { ArrowLeft, Copy, Check, ClipboardList, Pencil } from 'lucide-react'
 import { listCodes, createCode, type CodeRecord } from '../api/codes'
 import { listAgents, type AgentOption } from '../api/agents'
-import type { Customer } from '../api/customers'
+import { updateCustomer, type Customer } from '../api/customers'
 
 interface Props {
   customer: Customer
   onBack: () => void
+  onUpdate: (updated: Customer) => void
 }
 
 function formatDate(iso: string): string {
   return new Date(iso).toLocaleString('zh-TW', { timeZoneName: 'short' })
 }
 
-export default function CustomerDetailPage({ customer, onBack }: Props) {
+export default function CustomerDetailPage({ customer, onBack, onUpdate }: Props) {
   const [agents, setAgents] = useState<AgentOption[]>([])
   const [history, setHistory] = useState<CodeRecord[]>([])
   const [loading, setLoading] = useState(true)
@@ -21,6 +22,12 @@ export default function CustomerDetailPage({ customer, onBack }: Props) {
   const [copiedId, setCopiedId] = useState<number | null>(null)
   const [generatedToken, setGeneratedToken] = useState('')
   const [error, setError] = useState('')
+
+  // 編輯客戶名稱
+  const [editingName, setEditingName] = useState(false)
+  const [nameInput, setNameInput] = useState(customer.name)
+  const [savingName, setSavingName] = useState(false)
+  const [nameError, setNameError] = useState('')
 
   // form
   const [selectedAgents, setSelectedAgents] = useState<string[]>([])
@@ -48,6 +55,24 @@ export default function CustomerDetailPage({ customer, onBack }: Props) {
   }, [customer.id])
 
   useEffect(() => { void load() }, [load])
+
+  async function handleSaveName() {
+    if (!nameInput.trim() || nameInput.trim() === customer.name) {
+      setEditingName(false)
+      return
+    }
+    setSavingName(true)
+    setNameError('')
+    try {
+      const updated = await updateCustomer(customer.id, nameInput.trim())
+      onUpdate(updated)
+      setEditingName(false)
+    } catch (e) {
+      setNameError(e instanceof Error ? e.message : 'Error')
+    } finally {
+      setSavingName(false)
+    }
+  }
 
   function toggleAgent(id: string) {
     setSelectedAgents(prev =>
@@ -99,9 +124,46 @@ export default function CustomerDetailPage({ customer, onBack }: Props) {
         返回客戶列表
       </button>
 
-      <h1 className="mb-6 text-2xl font-bold text-gray-900">{customer.name}</h1>
+      {/* 客戶名稱（可編輯） */}
+      <div className="mb-6 flex items-center gap-2">
+        {editingName ? (
+          <div className="flex flex-1 items-center gap-2">
+            <input
+              autoFocus
+              value={nameInput}
+              onChange={e => setNameInput(e.target.value)}
+              onKeyDown={e => { if (e.key === 'Enter') void handleSaveName(); if (e.key === 'Escape') setEditingName(false) }}
+              className="flex-1 rounded-lg border border-blue-400 px-3 py-1.5 text-xl font-bold focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+            <button
+              onClick={() => { void handleSaveName() }}
+              disabled={savingName}
+              className="rounded-lg bg-blue-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-blue-700 disabled:opacity-60"
+            >
+              {savingName ? '儲存中...' : '儲存'}
+            </button>
+            <button
+              onClick={() => { setEditingName(false); setNameInput(customer.name) }}
+              className="rounded-lg border border-gray-300 px-3 py-1.5 text-sm text-gray-600 hover:bg-gray-50"
+            >
+              取消
+            </button>
+          </div>
+        ) : (
+          <>
+            <h1 className="text-2xl font-bold text-gray-900">{customer.name}</h1>
+            <button
+              onClick={() => { setEditingName(true); setNameInput(customer.name) }}
+              title="修改名稱"
+              className="text-gray-400 hover:text-gray-700"
+            >
+              <Pencil className="h-4 w-4" />
+            </button>
+          </>
+        )}
+      </div>
+      {nameError && <p className="mb-3 text-sm text-red-500">{nameError}</p>}
 
-      {/* 目前授權狀態 */}
       <div className="mb-6 rounded-xl border border-gray-200 bg-gray-50 px-5 py-4">
         <p className="text-xs font-semibold uppercase tracking-wide text-gray-400">目前授權 Agents</p>
         {customer.latest_license ? (
