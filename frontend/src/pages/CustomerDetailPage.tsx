@@ -133,18 +133,18 @@ export default function CustomerDetailPage({ customer, onBack, onUpdate }: Props
               value={nameInput}
               onChange={e => setNameInput(e.target.value)}
               onKeyDown={e => { if (e.key === 'Enter') void handleSaveName(); if (e.key === 'Escape') setEditingName(false) }}
-              className="flex-1 rounded-lg border border-blue-400 px-3 py-1.5 text-xl font-bold focus:outline-none focus:ring-2 focus:ring-blue-500"
+              style={{ flex: 1, border: '2px solid #3b82f6', borderRadius: 8, padding: '6px 12px', fontSize: 20, fontWeight: 'bold' }}
             />
             <button
               onClick={() => { void handleSaveName() }}
               disabled={savingName}
-              className="rounded-lg bg-blue-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-blue-700 disabled:opacity-60"
+              style={{ background: '#2563eb', color: '#fff', border: 'none', borderRadius: 8, padding: '6px 14px', cursor: 'pointer', fontSize: 14 }}
             >
               {savingName ? '儲存中...' : '儲存'}
             </button>
             <button
               onClick={() => { setEditingName(false); setNameInput(customer.name) }}
-              className="rounded-lg border border-gray-300 px-3 py-1.5 text-sm text-gray-600 hover:bg-gray-50"
+              style={{ background: '#fff', color: '#374151', border: '1px solid #d1d5db', borderRadius: 8, padding: '6px 14px', cursor: 'pointer', fontSize: 14 }}
             >
               取消
             </button>
@@ -154,16 +154,15 @@ export default function CustomerDetailPage({ customer, onBack, onUpdate }: Props
             <h1 className="text-2xl font-bold text-gray-900">{customer.name}</h1>
             <button
               onClick={() => { setEditingName(true); setNameInput(customer.name) }}
-              title="修改名稱"
-              className="flex items-center gap-1 rounded-md border border-gray-300 px-2 py-1 text-xs text-gray-500 hover:bg-gray-100"
+              style={{ background: '#eff6ff', color: '#2563eb', border: '1px solid #93c5fd', borderRadius: 6, padding: '4px 10px', cursor: 'pointer', fontSize: 13, display: 'flex', alignItems: 'center', gap: 4 }}
             >
-              <Pencil className="h-3.5 w-3.5" />
-              修改
+              <Pencil size={14} />
+              修改名稱
             </button>
           </>
         )}
       </div>
-      {nameError && <p className="mb-3 text-sm text-red-500">{nameError}</p>}
+      {nameError && <p style={{ color: 'red', fontSize: 13, marginBottom: 8 }}>{nameError}</p>}
 
       <div className="mb-6 rounded-xl border border-gray-200 bg-gray-50 px-5 py-4">
         <p className="text-xs font-semibold uppercase tracking-wide text-gray-400">目前授權 Agents</p>
