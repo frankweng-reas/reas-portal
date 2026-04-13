@@ -1,21 +1,24 @@
+"""授權碼產生邏輯，格式與 NeuroSme activation service 完全一致。
+
+Code 格式：{base64url(json_payload, no padding)}.{hmac_sha256[:32]}
+"""
+import base64
 import hashlib
 import hmac
 import json
-import os
-import base64
+import secrets
 from datetime import date
 
 from app.core.config import settings
 
 
-def _sign(payload: dict) -> str:
-    payload_b64 = base64.urlsafe_b64encode(
-        json.dumps(payload, ensure_ascii=False, separators=(",", ":")).encode()
-    ).decode()
+def _sign(payload_b64: str) -> str:
     sig = hmac.new(
-        settings.ACTIVATION_SECRET.encode(), payload_b64.encode(), hashlib.sha256
+        settings.ACTIVATION_SECRET.encode(),
+        payload_b64.encode(),
+        hashlib.sha256,
     ).hexdigest()
-    return f"{payload_b64}.{sig}"
+    return sig[:32]
 
 
 def generate_code(
@@ -23,11 +26,13 @@ def generate_code(
     agents: list[str],
     expires: date | None = None,
 ) -> str:
-    nonce = os.urandom(8).hex()
-    payload: dict = {
+    payload = {
         "customer": customer,
         "agents": agents,
         "expires": expires.isoformat() if expires else None,
-        "nonce": nonce,
+        "nonce": secrets.token_hex(8),
     }
-    return _sign(payload)
+    payload_json = json.dumps(payload, separators=(",", ":"), ensure_ascii=False)
+    payload_b64 = base64.urlsafe_b64encode(payload_json.encode()).decode().rstrip("=")
+    signature = _sign(payload_b64)
+    return f"{payload_b64}.{signature}"
