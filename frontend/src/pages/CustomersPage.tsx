@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react'
-import { Plus, Users, ChevronRight } from 'lucide-react'
+import { useState, useEffect, useMemo } from 'react'
+import { Plus, Users, ChevronRight, Search } from 'lucide-react'
 import { listCustomers, createCustomer, type Customer } from '../api/customers'
 
 interface Props {
@@ -13,6 +13,14 @@ export default function CustomersPage({ onSelect }: Props) {
   const [adding, setAdding] = useState(false)
   const [showForm, setShowForm] = useState(false)
   const [error, setError] = useState('')
+  const [query, setQuery] = useState('')
+
+  const filtered = useMemo(() =>
+    query.trim()
+      ? customers.filter(c => c.name.toLowerCase().includes(query.toLowerCase()))
+      : customers,
+    [customers, query],
+  )
 
   useEffect(() => {
     listCustomers()
@@ -40,7 +48,7 @@ export default function CustomersPage({ onSelect }: Props) {
 
   return (
     <div className="mx-auto max-w-2xl px-4 py-8">
-      <div className="mb-6 flex items-center justify-between">
+      <div className="mb-4 flex items-center justify-between">
         <div className="flex items-center gap-2">
           <Users className="h-5 w-5 text-gray-600" />
           <h1 className="text-2xl font-bold text-gray-900">客戶管理</h1>
@@ -52,6 +60,17 @@ export default function CustomersPage({ onSelect }: Props) {
           <Plus className="h-4 w-4" />
           新增客戶
         </button>
+      </div>
+
+      {/* 搜尋 */}
+      <div className="relative mb-4">
+        <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
+        <input
+          value={query}
+          onChange={e => setQuery(e.target.value)}
+          placeholder="搜尋客戶名稱..."
+          className="w-full rounded-lg border border-gray-300 py-2 pl-9 pr-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+        />
       </div>
 
       {showForm && (
@@ -76,11 +95,13 @@ export default function CustomersPage({ onSelect }: Props) {
 
       {loading ? (
         <p className="text-sm text-gray-400">載入中...</p>
-      ) : customers.length === 0 ? (
-        <p className="text-sm text-gray-400">尚無客戶，點右上角新增</p>
+      ) : filtered.length === 0 ? (
+        <p className="text-sm text-gray-400">
+          {query ? `找不到「${query}」` : '尚無客戶，點右上角新增'}
+        </p>
       ) : (
         <div className="space-y-2">
-          {customers.map(c => (
+          {filtered.map(c => (
             <button
               key={c.id}
               onClick={() => onSelect(c)}
