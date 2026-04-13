@@ -8,7 +8,7 @@ from app.core.database import Base, engine
 
 # models 必須在 create_all 之前 import，讓 SQLAlchemy 知道有哪些 table
 from app.models import customer, issued_code  # noqa: F401
-from app.api import codes, agents, customers
+from app.api import codes, agents, customers, download
 
 app = FastAPI(title="REAS Portal API")
 
@@ -26,6 +26,7 @@ app.add_middleware(
 app.include_router(codes.router, prefix="/api")
 app.include_router(agents.router, prefix="/api")
 app.include_router(customers.router, prefix="/api")
+app.include_router(download.router, prefix="/api")
 
 
 @app.get("/health")

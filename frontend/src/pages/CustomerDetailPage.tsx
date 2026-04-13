@@ -1,5 +1,5 @@
-import { useState, useEffect, useCallback } from 'react'
-import { ArrowLeft, Copy, Check, ClipboardList, Pencil } from 'lucide-react'
+import { useState, useEffect, useCallback, useRef } from 'react'
+import { ArrowLeft, Copy, Check, ClipboardList } from 'lucide-react'
 import { listCodes, createCode, type CodeRecord } from '../api/codes'
 import { listAgents, type AgentOption } from '../api/agents'
 import { updateCustomer, type Customer } from '../api/customers'
@@ -28,6 +28,7 @@ export default function CustomerDetailPage({ customer, onBack, onUpdate }: Props
   const [nameInput, setNameInput] = useState(customer.name)
   const [savingName, setSavingName] = useState(false)
   const [nameError, setNameError] = useState('')
+  const nameComposing = useRef(false)
 
   // form
   const [selectedAgents, setSelectedAgents] = useState<string[]>([])
@@ -149,7 +150,9 @@ export default function CustomerDetailPage({ customer, onBack, onUpdate }: Props
               autoFocus
               value={nameInput}
               onChange={e => setNameInput(e.target.value)}
-              onKeyDown={e => { if (e.key === 'Enter') void handleSaveName(); if (e.key === 'Escape') setEditingName(false) }}
+                  onKeyDown={e => { if (nameComposing.current) return; if (e.key === 'Enter') void handleSaveName(); if (e.key === 'Escape') setEditingName(false) }}
+              onCompositionStart={() => { nameComposing.current = true }}
+              onCompositionEnd={() => { nameComposing.current = false }}
               style={{ flex: 1, border: '2px solid #3b82f6', borderRadius: 8, padding: '6px 12px', fontSize: 20, fontWeight: 'bold' }}
             />
             <button onClick={() => { void handleSaveName() }} disabled={savingName}

@@ -2,10 +2,17 @@ import { useState } from 'react'
 import './index.css'
 import CustomersPage from './pages/CustomersPage'
 import CustomerDetailPage from './pages/CustomerDetailPage'
+import DownloadPage from './pages/DownloadPage'
 import type { Customer } from './api/customers'
+
+const isDownloadPage = window.location.pathname === '/download'
 
 export default function App() {
   const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(null)
+
+  if (isDownloadPage) {
+    return <DownloadPage />
+  }
 
   return (
     <div className="min-h-screen bg-gray-50">

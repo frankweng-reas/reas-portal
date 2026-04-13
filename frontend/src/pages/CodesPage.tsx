@@ -60,7 +60,7 @@ export default function CodesPage() {
     setSubmitting(true)
     try {
       const record = await createCode({
-        customer_name: customer.trim(),
+        customer_id: 0,
         agent_ids: selectedAgents,
         expires_at: expires || null,
         note: note.trim() || null,
