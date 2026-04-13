@@ -102,9 +102,26 @@ export default function CustomerDetailPage({ customer, onBack, onUpdate }: Props
   }
 
   async function copyToken(token: string, id: number) {
-    await navigator.clipboard.writeText(token)
-    setCopiedId(id)
-    setTimeout(() => setCopiedId(null), 2000)
+    try {
+      if (navigator.clipboard && window.isSecureContext) {
+        await navigator.clipboard.writeText(token)
+      } else {
+        // HTTP fallback
+        const el = document.createElement('textarea')
+        el.value = token
+        el.style.position = 'fixed'
+        el.style.opacity = '0'
+        document.body.appendChild(el)
+        el.focus()
+        el.select()
+        document.execCommand('copy')
+        document.body.removeChild(el)
+      }
+      setCopiedId(id)
+      setTimeout(() => setCopiedId(null), 2000)
+    } catch (e) {
+      console.error('copy failed', e)
+    }
   }
 
   // group agents by group_name
@@ -125,9 +142,9 @@ export default function CustomerDetailPage({ customer, onBack, onUpdate }: Props
       </button>
 
       {/* 客戶名稱（可編輯） */}
-      <div className="mb-6 flex items-center gap-2">
+      <div style={{ marginBottom: 24, display: 'flex', alignItems: 'center', gap: 12 }}>
         {editingName ? (
-          <div className="flex flex-1 items-center gap-2">
+          <div style={{ display: 'flex', flex: 1, alignItems: 'center', gap: 8 }}>
             <input
               autoFocus
               value={nameInput}
@@ -135,29 +152,23 @@ export default function CustomerDetailPage({ customer, onBack, onUpdate }: Props
               onKeyDown={e => { if (e.key === 'Enter') void handleSaveName(); if (e.key === 'Escape') setEditingName(false) }}
               style={{ flex: 1, border: '2px solid #3b82f6', borderRadius: 8, padding: '6px 12px', fontSize: 20, fontWeight: 'bold' }}
             />
-            <button
-              onClick={() => { void handleSaveName() }}
-              disabled={savingName}
-              style={{ background: '#2563eb', color: '#fff', border: 'none', borderRadius: 8, padding: '6px 14px', cursor: 'pointer', fontSize: 14 }}
-            >
+            <button onClick={() => { void handleSaveName() }} disabled={savingName}
+              style={{ background: '#2563eb', color: '#fff', border: 'none', borderRadius: 8, padding: '6px 14px', cursor: 'pointer', fontSize: 14 }}>
               {savingName ? '儲存中...' : '儲存'}
             </button>
-            <button
-              onClick={() => { setEditingName(false); setNameInput(customer.name) }}
-              style={{ background: '#fff', color: '#374151', border: '1px solid #d1d5db', borderRadius: 8, padding: '6px 14px', cursor: 'pointer', fontSize: 14 }}
-            >
+            <button onClick={() => { setEditingName(false); setNameInput(customer.name) }}
+              style={{ background: '#fff', color: '#374151', border: '1px solid #d1d5db', borderRadius: 8, padding: '6px 14px', cursor: 'pointer', fontSize: 14 }}>
               取消
             </button>
           </div>
         ) : (
           <>
-            <h1 className="text-2xl font-bold text-gray-900">{customer.name}</h1>
+            <h1 style={{ fontSize: 24, fontWeight: 'bold', margin: 0 }}>{customer.name}</h1>
             <button
               onClick={() => { setEditingName(true); setNameInput(customer.name) }}
-              style={{ background: '#eff6ff', color: '#2563eb', border: '1px solid #93c5fd', borderRadius: 6, padding: '4px 10px', cursor: 'pointer', fontSize: 13, display: 'flex', alignItems: 'center', gap: 4 }}
+              style={{ background: '#dc2626', color: '#fff', border: 'none', borderRadius: 6, padding: '6px 14px', cursor: 'pointer', fontSize: 14, fontWeight: 'bold' }}
             >
-              <Pencil size={14} />
-              修改名稱
+              ✏ 修改名稱
             </button>
           </>
         )}

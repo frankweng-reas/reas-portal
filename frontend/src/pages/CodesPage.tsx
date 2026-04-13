@@ -75,9 +75,25 @@ export default function CodesPage() {
   }
 
   async function copyToken(token: string, id: number) {
-    await navigator.clipboard.writeText(token)
-    setCopiedId(id)
-    setTimeout(() => setCopiedId(null), 2000)
+    try {
+      if (navigator.clipboard && window.isSecureContext) {
+        await navigator.clipboard.writeText(token)
+      } else {
+        const el = document.createElement('textarea')
+        el.value = token
+        el.style.position = 'fixed'
+        el.style.opacity = '0'
+        document.body.appendChild(el)
+        el.focus()
+        el.select()
+        document.execCommand('copy')
+        document.body.removeChild(el)
+      }
+      setCopiedId(id)
+      setTimeout(() => setCopiedId(null), 2000)
+    } catch (e) {
+      console.error('copy failed', e)
+    }
   }
 
   return (
