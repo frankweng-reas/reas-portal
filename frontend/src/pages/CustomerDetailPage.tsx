@@ -303,15 +303,6 @@ export default function CustomerDetailPage({ customer, onBack, onUpdate }: Props
                       {item.note && <> · {item.note}</>}
                     </p>
                   </div>
-                  <button
-                    type="button"
-                    onClick={() => { void copyToken(item.code_token, item.id) }}
-                    title="複製授權碼"
-                    className="flex shrink-0 items-center gap-1 rounded-md border border-gray-300 px-2.5 py-1.5 text-xs text-gray-600 hover:bg-gray-50"
-                  >
-                    {copiedId === item.id ? <Check className="h-3.5 w-3.5 text-green-600" /> : <Copy className="h-3.5 w-3.5" />}
-                    複製
-                  </button>
                 </div>
               </div>
             ))}
