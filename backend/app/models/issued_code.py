@@ -1,7 +1,7 @@
 from datetime import date, datetime
 
-from sqlalchemy import Date, DateTime, String, Text, func
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy import Date, DateTime, ForeignKey, Integer, String, Text, func
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.core.database import Base
 
@@ -12,6 +12,9 @@ class IssuedCode(Base):
     __tablename__ = "issued_codes"
 
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
+    customer_id: Mapped[int] = mapped_column(
+        Integer, ForeignKey("customers.id", ondelete="CASCADE"), nullable=False
+    )
     customer_name: Mapped[str] = mapped_column(String(200), nullable=False)
     agent_ids: Mapped[str] = mapped_column(Text, nullable=False)  # comma-separated
     expires_at: Mapped[date | None] = mapped_column(Date, nullable=True)
@@ -20,3 +23,7 @@ class IssuedCode(Base):
         DateTime(timezone=True), server_default=func.now(), nullable=False
     )
     note: Mapped[str | None] = mapped_column(Text, nullable=True)
+
+    customer: Mapped["Customer"] = relationship(  # type: ignore[name-defined]
+        "Customer", back_populates="issued_codes"
+    )

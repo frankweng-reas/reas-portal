@@ -2,6 +2,7 @@ import { apiFetch } from './client'
 
 export interface CodeRecord {
   id: number
+  customer_id: number
   customer_name: string
   agent_ids: string[]
   expires_at: string | null
@@ -11,14 +12,15 @@ export interface CodeRecord {
 }
 
 export interface GenerateRequest {
-  customer_name: string
+  customer_id: number
   agent_ids: string[]
   expires_at: string | null
   note: string | null
 }
 
-export function listCodes(): Promise<CodeRecord[]> {
-  return apiFetch<CodeRecord[]>('/codes')
+export function listCodes(customer_id?: number): Promise<CodeRecord[]> {
+  const qs = customer_id ? `?customer_id=${customer_id}` : ''
+  return apiFetch<CodeRecord[]>(`/codes${qs}`)
 }
 
 export function createCode(req: GenerateRequest): Promise<CodeRecord> {
