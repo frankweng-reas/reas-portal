@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import { ClipboardList, Plus, Copy, Check, RefreshCw } from 'lucide-react'
 import { listCodes, createCode, type CodeRecord } from '../api/codes'
-import { AGENT_OPTIONS } from '../api/agents'
+import { listAgents, type AgentOption } from '../api/agents'
 
 function formatDate(iso: string): string {
   return new Date(iso).toLocaleString('zh-TW', { timeZoneName: 'short' })
@@ -9,6 +9,7 @@ function formatDate(iso: string): string {
 
 export default function CodesPage() {
   const [history, setHistory] = useState<CodeRecord[]>([])
+  const [agents, setAgents] = useState<AgentOption[]>([])
   const [loading, setLoading] = useState(true)
   const [submitting, setSubmitting] = useState(false)
   const [copiedId, setCopiedId] = useState<number | null>(null)
@@ -23,8 +24,9 @@ export default function CodesPage() {
 
   const fetchHistory = useCallback(async () => {
     try {
-      const data = await listCodes()
-      setHistory(data)
+      const [codes, agentList] = await Promise.all([listCodes(), listAgents()])
+      setHistory(codes)
+      setAgents(agentList)
     } catch (e) {
       console.error(e)
     } finally {
@@ -112,7 +114,7 @@ export default function CodesPage() {
           <div>
             <label className="mb-1 block text-sm font-medium text-gray-700">授權 Agents *</label>
             <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
-              {AGENT_OPTIONS.map(a => (
+              {agents.map(a => (
                 <label
                   key={a.agent_id}
                   className="flex cursor-pointer items-center gap-2 rounded-lg border border-gray-200 px-3 py-2 text-sm hover:bg-blue-50"

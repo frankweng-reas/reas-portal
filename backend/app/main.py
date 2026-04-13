@@ -5,7 +5,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.core.config import settings
 from app.core.database import Base, engine
-from app.api import codes
+from app.api import codes, agents
 
 app = FastAPI(title="REAS Portal API")
 
@@ -21,6 +21,7 @@ app.add_middleware(
 )
 
 app.include_router(codes.router, prefix="/api")
+app.include_router(agents.router, prefix="/api")
 
 
 @app.get("/health")
