@@ -8,11 +8,15 @@ from fastapi.responses import FileResponse
 from pydantic import BaseModel
 
 from app.core.activation import verify_code
+from app.core.agent_defs import AGENT_DEFS
 from app.core.config import settings
 
 router = APIRouter(prefix="/download", tags=["download"])
 
 _SAFE_FILENAME = re.compile(r"^[\w\.\-]+\.tar\.gz$")
+
+# agent_id → agent_name 對照表
+_AGENT_NAME_MAP: dict[str, str] = {a["agent_id"]: a["agent_name"] for a in AGENT_DEFS}
 
 
 def _release_dir() -> Path:
@@ -25,6 +29,8 @@ def _list_releases() -> list[dict]:
         return []
     releases = []
     for f in sorted(d.glob("*.tar.gz"), reverse=True):
+        if f.name.startswith("."):  # 跳過隱藏檔（如 .localauth-cache.tar.gz）
+            continue
         stat = f.stat()
         releases.append({
             "filename": f.name,
@@ -55,9 +61,11 @@ class VerifyResponse(BaseModel):
 def verify(req: VerifyRequest) -> VerifyResponse:
     payload = verify_code(req.code)
     releases = _list_releases()
+    agent_ids: list[str] = payload.get("agents", [])
+    agent_names = [_AGENT_NAME_MAP.get(aid, aid) for aid in agent_ids]
     return VerifyResponse(
         customer=payload.get("customer", ""),
-        agents=payload.get("agents", []),
+        agents=agent_names,
         expires=payload.get("expires"),
         releases=[ReleaseItem(**r) for r in releases],
     )

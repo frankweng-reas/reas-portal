@@ -14,10 +14,12 @@ class AgentDef(TypedDict):
 
 
 AGENT_DEFS: list[AgentDef] = [
-    {"agent_id": "chat",       "agent_name": "Chat Agent",             "group_id": "production", "group_name": "生產管理"},
+    {"agent_id": "chat",       "agent_name": "Chat Agent",             "group_id": "production", "group_name": "生產力"},
+    {"agent_id": "knowledge",  "agent_name": "Knowledge Agent",        "group_id": "knowledge",  "group_name": "知識管理"},
+    {"agent_id": "cs",         "agent_name": "Chat Service Agent",     "group_id": "knowledge",  "group_name": "知識管理"},
 #    {"agent_id": "order",      "agent_name": "Order Agent",            "group_id": "production", "group_name": "生產管理"},
 #    {"agent_id": "quotation",  "agent_name": "Quotation Agent",        "group_id": "sales",      "group_name": "銷售管理"},
-    {"agent_id": "business",   "agent_name": "Business Insight Agent", "group_id": "sales",      "group_name": "銷售管理"},
+    {"agent_id": "business",   "agent_name": "Business Insight Agent", "group_id": "sales",      "group_name": "分析"},
 #    {"agent_id": "customer",   "agent_name": "Customer Insight Agent", "group_id": "sales",      "group_name": "銷售管理"},
 #    {"agent_id": "test01",     "agent_name": "Test01 Agent",           "group_id": "sales",      "group_name": "銷售管理"},
 #    {"agent_id": "interview",  "agent_name": "Interview Agent",        "group_id": "hr",         "group_name": "人資管理"},
