@@ -15,6 +15,7 @@ class AgentDef(TypedDict):
 
 AGENT_DEFS: list[AgentDef] = [
     {"agent_id": "chat",       "agent_name": "Chat Agent",             "group_id": "production", "group_name": "生產力"},
+    {"agent_id": "writing",    "agent_name": "Writing Agent",          "group_id": "production", "group_name": "生產力"},
     {"agent_id": "knowledge",  "agent_name": "Knowledge Agent",        "group_id": "knowledge",  "group_name": "知識管理"},
     {"agent_id": "cs",         "agent_name": "Chat Service Agent",     "group_id": "knowledge",  "group_name": "知識管理"},
 #    {"agent_id": "order",      "agent_name": "Order Agent",            "group_id": "production", "group_name": "生產管理"},
