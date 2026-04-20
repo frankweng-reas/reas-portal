@@ -160,6 +160,26 @@ export default function DownloadPage() {
                   </div>
                 </div>
 
+                {/* 說明備註 */}
+                <div className="rounded-2xl bg-amber-50 p-5 ring-1 ring-amber-100">
+                  <div className="text-base text-amber-800 space-y-2">
+                    <p className="font-semibold">安裝前置條件</p>
+                    <div className="space-y-1">
+                      <p>① 安裝 Docker（含 Compose Plugin）：</p>
+                      <p className="text-amber-700">· Linux：</p>
+                      <code className="block bg-amber-100 rounded px-2 py-1 font-mono text-base text-amber-900">
+                        curl -fsSL https://get.docker.com | sh
+                      </code>
+                      <p className="text-amber-700">
+                        · Mac：安裝 <a href="https://www.docker.com/products/docker-desktop/" target="_blank" rel="noreferrer" className="underline font-semibold">Docker Desktop</a>
+                      </p>
+                    </div>
+                    <p>② 防火牆開放 port <span className="font-mono font-semibold">80</span> 與 <span className="font-mono font-semibold">443</span>（TCP inbound）</p>
+                    <p>③ 準備好伺服器的 <span className="font-semibold">domain 或 IP</span>（執行 <span className="font-mono">start.sh</span> 時會詢問，Caddy 自動設定 HTTPS）</p>
+                    <p className="pt-1 border-t border-amber-200">預設登入：<span className="font-mono">admin@local.dev / Admin1234!</span></p>
+                  </div>
+                </div>
+
                 {/* 安裝說明卡 */}
                 <div className="rounded-2xl bg-slate-900 p-6 shadow-sm">
                   <h2 className="mb-4 flex items-center gap-2 text-base font-semibold uppercase tracking-wide text-slate-400">
@@ -171,18 +191,6 @@ cd neurosme-onprem-vX.X.X
 bash start.sh`}</pre>
                   <p className="mt-4 text-base text-slate-500">日常重啟（不重新載入映像）：</p>
                   <pre className="mt-1 overflow-x-auto text-base leading-relaxed text-slate-300">{`bash restart.sh`}</pre>
-                </div>
-
-                {/* 說明備註 */}
-                <div className="rounded-2xl bg-amber-50 p-5 ring-1 ring-amber-100">
-                  <div className="text-base text-amber-800 space-y-1">
-                    <p className="font-semibold">安裝前置條件</p>
-                      <p>伺服器需先安裝 Docker（含 Compose Plugin）：</p>
-                      <code className="block bg-amber-100 rounded px-2 py-1 font-mono text-base text-amber-900">
-                        curl -fsSL https://get.docker.com | sh
-                      </code>
-                      <p className="pt-1">預設登入：<span className="font-mono">admin@local.dev / Admin1234!</span></p>
-                    </div>
                 </div>
 
               </div>
